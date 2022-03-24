@@ -107,9 +107,9 @@ The main takeaways here in running before implementing `HuffProcess.decompress` 
 - Understand how to use `diff` on the command line to compare files. 
 
 <details>
-<summary>Expand for details on running `diff` at the terminal</summary>
+<summary>Expand for details on running diff at the terminal</summary>
 
-There is a mac/unix command `diff` you can run in a terminal/bash shell on Mac/Windows (you can also just use the integrated terminal in VS Code). This command-line `diff`  compares two files and indicates if they are the same bit-for-bit or not. 
+There is a mac/unix command `diff` you can run in a terminal/bash shell on Mac/Windows. This command-line `diff`  compares two files and indicates if they are the same bit-for-bit or not. 
 
 You type (terminal/shell):    `diff foo.txt bar.txt`
 
@@ -119,12 +119,7 @@ If the files are the same _nothing is printed_. If the files are different there
 
 ## Part 1: Implementing `HuffProcessor.decompress`
 
-You should begin programming by implementing `decompress` first before moving on to `compress`.
-
-### Writing Decompression Code First
-
-You'll remove the code you're given intially in `HuffProcessor.decompress` and implement code to actually compress as described in this section. You **must remember to close the output file** before `decompress` returns. The call `out.close` is in the code you're given, be sure it's in the code you write as well.
-
+You should begin programming by implementing `decompress` first before moving on to `compress`. You'll remove the code you're given intially in `HuffProcessor.decompress` and implement code to actually compress as described in this section. You **must remember to close the output file** before `decompress` returns. The call `out.close` is in the code you're given, be sure it's in the code you write as well.
 
 There are four conceptual steps in decompressing a file that has been compressed using Huffman coding:
 1. Read the 32-bit "magic" number as a check on whether the file is Huffman-coded (see lines 150-153 below)
@@ -132,22 +127,32 @@ There are four conceptual steps in decompressing a file that has been compressed
 3. Read the bits from the compressed file and use them to traverse root-to-leaf paths, writing leaf values to the output file. Stop when finding `PSEUDO_EOF` (hidden while loop on lines 156-174 below).
 4. Close the output file (line 175 below).
 
+We recommend using the following code as a base for your decompress method because it illustrates how to use the bit-stream classes and how to throw appropriate exceptions. However, you will not be penalized if you use an alternative method to code it.
+
+<details> 
+<summary> Expand for example decompress outline </summary>
+
 <div align="center">
   <img width="837" height="254" src="p7-figures/decompress.png">
 </div>
 
+To understand this in more detail, please read the explanation in https://www2.cs.duke.edu/csed/poop/huff/info/ -- in particular you'll need to know how the tree was written to write code that reads the tree.
 
-We recommend using the code above as a base for your decompress method because it illustrates how to use the bit-stream classes and how to throw appropriate exceptions. However, you will not be penalized if you use an alternative method to code it. To understand this in more detail, please read the explanation in https://www2.cs.duke.edu/csed/poop/huff/info/ -- in particular you'll need to know how the tree was written to write code that reads the tree.
+</details>
 
-As you can see, a `HuffException` is thrown if the file of compressed bits does not start with the 32-bit value `HUFF_TREE`. Your code should also throw a `HuffException` if reading bits ever fails, i.e., the `readBits` method returns -1. That could happen in the helper methods when reading the tree and when reading the compressed bits.
+As you can see in the example above, a `HuffException` is thrown if the file of compressed bits does not start with the 32-bit value `HUFF_TREE`. Your code should also throw a `HuffException` if reading bits ever fails, i.e., the `readBits` method returns -1. That could happen in the helper methods when reading the tree and when reading the compressed bits.
 
 
 ### Reading the Tree (private HuffNode readTree)
 
-<br>
-
 Reading the tree using a helper method is required since reading the tree, stored using a pre-order traversal, is much simpler with recursion. You don't have to use the names or parameters described above, though you can.
-In the 201 Huffman tree protocol, interior tree nodes are indicated by the single bit 0 and leaf nodes are indicated by the single bit 1. No values are written for internal nodes and a 9-bit value is written for a leaf node. This leads to the following pseudocode to read the tree.
+In the 201 Huffman tree protocol, interior tree nodes are indicated by the single bit 0 and leaf nodes are indicated by the single bit 1. No values are written for internal nodes and a 9-bit value is written for a leaf node. 
+
+This leads to the following pseudocode to read the tree.
+
+<details>
+<summary> Expand for outline of readTree </summary>
+
 ``` java
 private HuffNode readTree(BitInputStream in) {
 bit = in.readBits(1);
@@ -163,19 +168,29 @@ else {
     }
 }
 ``` 
+
+</details>
+
 For example, the tree below corresponds to the bit sequence `0001X1Y01Z1W01A1B`, with each letter representing a 9-bit sequence to be stored in a leaf as shown in the tree to the right. You'll read these 9-bit chunks with an appropriate call of `readBits`. Rather than use 9, you should use `BITS_PER_WORD + 1`, the +1 is needed since one leaf stores `PSEUDO_EOF` so all leaf nodes store a 9-bit value. See the [appendix](#appendix-how-the-tree-in-decompress-was-generated) for a detailed explanation on how this tree was constructed.
+
+<details> 
+<summary> Expand for example tree </summary>
 
 <div align="center">
   <img width="291" height="213" src="p7-figures/huffheadtreeNODES.png">
 </div>
 
-### Reading Compressed Bits (while (true))
+</details>
 
-<br>
+
+### Reading Compressed Bits (while (true))
 
 Once you've read the bit sequence representing the tree, you'll read the remaining bits from the `BitInputStream` representing the compressed file one bit at a time, traversing the tree from the root and going left or right depending on whether you read a zero or a one. This is represented in the pseudocode for `decompress` by the hidden while loop.
 
-The pseudocode from https://www.cs.duke.edu/csed/poop/huff/info/  is reproduced here, this is the same code shown in that document -- it's not perfect Java, hence pseudocode. (Note: you break when reaching `PSEUDO_EOF`, and then no bits are written to the output file. Otherwise, when writing a value stored in a leaf to the output stream, you write 8, or `BITS_PER_WORD` bits).
+The pseudocode from https://www.cs.duke.edu/csed/poop/huff/info/  is reproduced in the expandable section below, this is the same code shown in that document -- it's not perfect Java, hence pseudocode. (Note: you break when reaching `PSEUDO_EOF`, and then no bits are written to the output file. Otherwise, when writing a value stored in a leaf to the output stream, you write 8, or `BITS_PER_WORD` bits).
+
+<details>
+<summary> Expand for pseudocode example </summary>
 
 ``` java
   HuffNode current = root; 
@@ -200,6 +215,9 @@ The pseudocode from https://www.cs.duke.edu/csed/poop/huff/info/  is reproduced 
   }
   close output file
 ```
+
+</details>
+
 
 ## Part 2: Implementing `HuffProcessor.compress`
 
