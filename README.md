@@ -4,10 +4,7 @@
 - [Part 0: Understanding and Running Starter Code](#part-0-understanding-and-running-starter-code)
 - [Part 1: Implementing `HuffProcessor.decompress`](#part-1-implementing-huffprocessordecompress)
 - [Part 2: Implementing `HuffProcessor.compress`](#part-2-implementing-huffprocessorcompress)
-- [Analysis](#analysis)
-- [Submitting](#submitting)
-- [Reflect](#reflect)
-- [Grading](#grading)
+- [Submitting, Reflect, Grading](#submitting-reflect-grading)
 - [Appendix: How the Tree in `decompress` was generated](#appendix-how-the-tree-in-decompress-was-generated)
 - [Appendix: Print Debugging Levels](#appendix-print-debugging-levels)
 
@@ -221,32 +218,32 @@ The pseudocode from https://www.cs.duke.edu/csed/poop/huff/info/  is reproduced 
 
 ## Part 2: Implementing `HuffProcessor.compress`
 
-Writing Compress after finishing Decompress
-
 There are five conceptual steps to compress a file using Huffman coding. You do not need to use helper methods for these steps, but for some steps helper methods are extremely useful and will facilitate debugging.
+
 1. Determine the frequency of every eight-bit character/chunk in the file being compressed (see line 78 below).
 2. From the frequencies, create the Huffman trie/tree used to create encodings (see line 79 below).
 3. From the trie/tree, create the encodings for each eight-bit character chunk (see lines 83-84 below).
 4. Write the magic number and the tree to the beginning/header of the compressed file (see lines 81-82 below).
 5. Read the file again and write the encoding for each eight-bit chunk, followed by the encoding for PSEUDO_EOF, then close the file being written (not shown).
+
 You won't need to throw exceptions for the steps outlined. A brief description of each step follows. More details can be found in the explanation of the Huffman algorithm [here][Duke Huffman]
 
 <div align="center">
-  <img width="798" height="244" src="p7-figures/newcompress.png">
+  <img width="600" height="180" src="p7-figures/newcompress.png">
 </div>
 
 ### Determining Frequencies (private int[] getCounts)
-
-<br>
 
 Create an integer array that can store 256 values (use `ALPH_SIZE`). You'll read 8-bit characters/chunks, (using `BITS_PER_WORD` rather than 8), and use the read/8-bit value as an index into the array, incrementing the frequency. Conceptually this is a map from 8-bit chunk to frequency for that chunk, it's easy to use an array for this, mapping the index to the number of times the index occurs, e.g., `counts['a']` is the number of times 'a' occurs in the input file being compressed. The code you start with in compress (and decompress) illustrates how to read until the sentinel -1 is read to indicate there are no more bits in the input stream. 
 
 
 ### Making Huffman Trie/Tree (private HuffNode makeTree)
 
-<br>
+You'll use a greedy algorithm and a `PriorityQueue` of `HuffNode` objects to create the trie. Since `HuffNode` implements `Comparable` (using weight), the code you write will remove the minimal-weight nodes when `pq.remove()` is called as shown in the pseudocode included in the expandable section below.
 
-You'll use a greedy algorithm and a `PriorityQueue` of `HuffNode` objects to create the trie. Since `HuffNode` implements `Comparable` (using weight), the code you write will remove the minimal-weight nodes when `pq.remove()` is called as shown in the pseudocode below.
+<details>
+<summary> Expand for makeTree pseudocode </summary>
+
 ``` java
 PriorityQueue<HuffNode> pq = new PriorityQueue<>();
 for(every index such that freq[index] > 0) {
@@ -265,11 +262,12 @@ HuffNode root = pq.remove();
 return root;
 ```
 
+</details>
+
 You'll need to ***be sure that `PSEUDO_EOF` is represented in the tree. *** As shown above, you should only add nodes to the priority queue for indexes/8-bit values that occur, i.e., that have non-zero weights.
 
-### Make Codings from Trie/Tree (private makeEncodings)
 
-<br>
+### Make Codings from Trie/Tree (private makeEncodings)
 
 For this, you'll essentially implement a recursive helper method, similar to code you've seen in discussion for the [LeafTrails APT problem](https://www2.cs.duke.edu/csed/newapt/leaftrails.html). As shown in the example of compress above, this method populates an array of Strings such that `encodings[val]` is the encoding of the 8-bit chunk val. See the debugging runs at the end of this write-up for details. As with the LeafTrails APT, the recursive helper method will have the array of encodings as one parameter, a node that's the root of a subtree as another parameter, and a string that's the path to that node as a string of zeros and ones. The first call of the helper method might be as shown, e.g., in the helper method `makeEncodings`.
 ``` java
@@ -288,8 +286,6 @@ If the root is not a leaf, you'll need to make recursive calls adding "0" to the
 
 ### Writing the Tree (private void writeTree)
 
-<br>
-
 Writing the tree is similar to the code you wrote to read the tree when decompressing. If a node is an internal node, i.e., not a leaf, write a single bit of zero. Else, if the node is a leaf, write a single bit of one, followed by _nine bits_ of the value stored in the leaf.  This is a pre-order traversal: write one bit for the node, then make two recursive calls if the node is an internal node. No recursion is used for leaf nodes. You'll need to write 9 bits, or `BITS_PER_WORD + 1`, because there are 257 possible values including `PSEUDO_EOF`.
 
 ### Writing Compressed Bits
@@ -306,36 +302,23 @@ You'll use code like this for every 8-bit chunk read from the file being compres
 ```
 You'll write these bits _after_ writing the bits for every 8-bit chunk. The encoding for `PSEUDO_EOF` is used when decompressing, ***so you'll need to write the encoding bits before the output file is closed.***
 
+## Submitting, Reflect, Grading
 
-## Analysis
-<details> 
-<summary>Analysis, Submitting, Grading</summary>
+No analysis is required for P7 Huffman. However, you should be able to answer questions like those shown below, and questions related to the project could appear on the final exam.
 
-No analysis is required. However, you should be able to answer these questions, and they may appear on the final.
 1. Why did you implement decompress first?
 2. What is the purpose of PSEUDO_EOF?
 3. How can a compressed file have more bits than the file being compressed? When does this happen?
 4. What compresses more: an image file or a text file, why do you think this happens?
 
-## Submitting
+You'll submit the code to Gradescope after pushing your program to GitLab. If you worked with a partner, you and your partner will submit **together for the code** but **separately for the reflect.** Refer to [this document](https://docs.google.com/document/d/e/2PACX-1vREK5ajnfEAk3FKjkoKR1wFtVAAEN3hGYwNipZbcbBCnWodkY2UI1lp856fz0ZFbxQ3yLPkotZ0U1U1/pub) for submitting to Gradescope with a partner.
 
-You'll submit the code to Gradescope after pushing your program to GitLab. This is a partner/team project in Gradescope. ***If you're working with a partner only one person will submit and then will be able to add the other as partner.***
+**You can access the reflect from here: TODO**
 
-Refer to this document for submitting to Gradescope with a partner: https://docs.google.com/document/d/1L_zqiecoK6GXKyaW1cSE-msE1C7QJYhcz7FRKusmjik/edit#heading=h.e0pq4rh5kfd2
+### Grading 
 
-## Reflect
+Points are awarded equally for compression and decompression. You'll get points for decompressing and compressing text and image files. These are 10 points each, for a total of 40 points possible. There is no graded analysis portion for this project. Completing the reflect is two points.
 
-You can access the reflect: https://do-compsci.com/201fall21-p7-reflect
-
-## Grading
-
-Points are awarded equally for compression and decompression. You'll get points for decompressing and compressing text and image files. These are 10 points each, for a total of 40 points possible. There is no graded analysis portion for this project. Completing the reflect is two points. Completing the partner form is two points
-
-- Reflect: https://do-compsci.com/201fall21-p7-reflect
-- Partner: https://do-compsci.com/201fall21-p7-partner
-
-
-</details>
 
 ## Appendix: How the Tree in `decompress` was generated
 <details>
