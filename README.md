@@ -1,15 +1,9 @@
 # P7: Huffman Coding/Compression
 
-- [Overview and Background (not required)](#overview-and-background-not-required)
-    - [Acknowledgments and History](###acknowledgments-and-history)
-- [Overview: What To Do](#overview-what-to-do)
-    - [What To Do Details](#what-to-do-details)
-- [Git Repositories](#git-repositories)
-    - [Pushing to Git](#pushing-to-git)
-    - [Git With Partners](#git-with-partners)
-- [Before You Start: The BitInputStream and BitOutputStream Classes](#before-you-start-the-bitinputstream-and-bitoutputstream-classes)
-- [Implementing `HuffProcessor.decompress`](#implementing-huffprocessordecompress)
-- [Implementing `HuffProcessor.compress`](#implementing-huffprocessorcompress)
+- [Project Introduction](#project-introduction)
+- [Part 0: Understanding and Running Starter Code](#part-0-understanding-and-running-starter-code)
+- [Part 1: Implementing `HuffProcessor.decompress`](#part-1-implementing-huffprocessordecompress)
+- [Part 2: Implementing `HuffProcessor.compress`](#part-2-implementing-huffprocessorcompress)
 - [Analysis](#analysis)
 - [Submitting](#submitting)
 - [Reflect](#reflect)
@@ -17,40 +11,25 @@
 - [Appendix: How the Tree in `decompress` was generated](#appendix-how-the-tree-in-decompress-was-generated)
 - [Appendix: Print Debugging Levels](#appendix-print-debugging-levels)
 
-## Overview and Background
+## Project Introduction
+
+There are many techniques used to compress digital data (that is, to represent it using less memory). This assignment covers Huffman Coding, which is used everywhere from zipping a folder to jpeg and mp3 encodings. You can optionally read more about the history of Huffman Coding and this project in the expandable section below.
+
 <details>
-<summary>**Please Read** Background</summary>
-
-There are many techniques used to compress digital data. This assignment covers Huffman Coding.
-
+<summary>Optional Background of Huffman</summary>
 Huffman coding was invented by David Huffman while he was a graduate student at MIT in 1950 when given the option of a term paper or a final exam. For details, see [this 1991 Scientific American Article][Huffman Article]. In an autobiography Huffman had this to say about the epiphany that led to his invention of the coding method that bears his name:
 
 "*-- but a week before the end of the term I seemed to have nothing to show for weeks of effort. I knew I'd better get busy fast, do the standard final, and forget the research problem. I remember, after breakfast that morning, throwing my research notes in the wastebasket. And at that very moment, I had a sense of sudden release, so that I could see a simple pattern in what I had been doing, that I hadn't been able to see at all until then. The result is the thing for which I'm probably best known: the Huffman Coding Procedure. I've had many breakthroughs since then, but never again all at once, like that. It was very exciting.*"
 
 [The Wikipedia reference][Huffman Wikipedia] is extensive as is [this online material][Duke Huffman ] developed as one of the original [Nifty Assignments][Nifty Assignments]. Both jpeg and mp3 encodings use Huffman Coding as part of their compression algorithms. In this assignment you'll implement a complete program to compress and uncompress data using Huffman coding.
-**You should read about the Huffman algorithm, and work to understand it.** You won't be able to complete the project easily without the overview you'll get from this reading: https://www.cs.duke.edu/csed/poop/huff/info/ .
-
-When you've read the description of the algorithm and data structures used you'll be ready to implement both decompression (aka uncompressing) and compression  using Huffman Coding. You'll be using input and output or I/O classes that read and write 1 to many bits at a time, i.e., a single zero or one to several zeros and ones. This will make debugging your program a challenge.
-
-### Acknowledgments and History
 
 We first gave a Huffman coding assignment at Duke in Spring of 1994. Over the years many people have worked on creating the infrastructure for the bit-reading and -writing code (as we changed from C to C++ to Java at Duke) and the GUI that drives the Huffman assignment. It was one of the original so-called "nifty assignments" (see http://nifty.stanford.edu) in 1999. In Fall of 2018 we moved away from the GUI and using a simple main and the command-line. This was done for pragmatic and philosophical reasons.
-
 </details>
 
-## Overview: What To Do
+**You should read about the Huffman algorithm, and work to understand it. You won't be able to complete the project easily without the overview you'll get from this reading: [Huffman algorithm reading and examples](https://www.cs.duke.edu/csed/poop/huff/info/).** You should be able to answer the questions provided in the expandable section below based on your reading and class/discussion. **Try to do so before beginning to code (but you do not need to turn in your answers).**
+
 <details>
-<summary>High-level overview, using Git, How to Run programs</summary>
-
-You may work with a partner, ***preferably from your discussion section***, but you can work with anyone who is taking 201 this semester. You *must* complete this partner form, even if you don't want a partner: https://do-compsci.com/201fall21-p7-partner
-
-You'll first implement decompression, by writing `HuffProcessor.decompress`. This method is called from `HuffMainDecompress`, the program you'll run. You'll make sure you can decompress **both** text and image files. When you're confident you can decompress both types of files, you'll implement compression by writing `HuffProcessor.compress`. This method is called from `HuffMainCompress`, which is the program you'll run. The class `HuffProcessor` will have helper methods --- some used by both `compress` and `decompress`, so these methods are in the same class to make that sharing easier to accomplish.
-
-Verify compress works (see below)  -- this is feasible because you already have confidence that your decompress/uncompress program works. Test that you can compress (and decompress) both text and image files.
-
-### Self Assessment 
-
-You should read about the algorithm using the references above (https://www.cs.duke.edu/csed/poop/huff/info/) and watch the [class Video W](https://www.youtube.com/watch?v=P_2dA2YfDOo) before you start writing code. You should be able to answer these questions, and you should try to do so, before writing code:
+<summary>Pre-reading self-assessment questions</summary>
 
 1. Why are two passes over the input file to be compressed required when creating a compressed version of the input file?
 2. What aspects of creating the Huffman tree from counts account for that process being a greedy algorithm?
@@ -59,54 +38,54 @@ You should read about the algorithm using the references above (https://www.cs.d
 5. Why are the bits written at the end of the compressed file representing PSEUDO_EOF required?
 6. After reading the magic number and tree, how are the bits representing compressed data read when decompressing, e.g., how many bits are read each time the compressed data is accessed?
 
+</details>
 
-### What To Do Details
+When you've read the description of the algorithm and data structures used you'll be ready to implement both decompression (a.k.a. uncompressing) and compression  using Huffman Coding. You'll be using input and output or I/O classes that read and write 1 to many bits at a time, i.e., a single zero or one to several zeros and ones. This will make debugging your program a challenge.
 
-You'll first write a program to decompress an already compressed file. _**When that works**_ you'll write a program to compress any file: text, image, sound, etc.
+### Git and Partners, and Submitting for P7
 
-1.  **Run `HuffMainDecompress`**. This prompts for a file to decompress, then calls `HuffProcessor.decompress`. You're given a stub version of that method; it initially ***simply copies the first file to another file***, it doesn’t actually decompress it. To make sure you know how to use this program, we recommend you run the program as described.
+<details>
+<summary>Details on Standard Project Workflow</summary>
+You must have installed all software (Java, Git, VS Code) before you can complete the project.You can find the [directions for installation here](https://coursework.cs.duke.edu/201-public-documentation/resources-201/-/blob/main/installingSoftware.md). We'll be using Git and the installation of GitLab at [coursework.cs.duke.edu](https://coursework.cs.duke.edu). All code for classwork will be kept here. Git is software used for version control, and GitLab is an online repository to store code in the cloud using Git.
 
-Choose `mystery.tif.hf` from the data folder to decompress (the `.hf` suffix indicates this has been compressed by a working `HuffProcessor.compress`). When prompted with a name for the file to save, use a `UHF prefix`, i.e., save with the name `UFHmystery.tif.uhf (that suffix is the default).  Then run _diff_ on the command line/terminal (or the _Diff.java_ program as described below). Use diff to compare two files: the original, `mystery.tif.hf` and the uncompressed version: `UHFmystery.tif.uhf`. The diff/Diff program should say these files are the same. This is because the code you first get from git simply copies the first file to another file, it doesn't actually decompress it. 
+**[This document details the workflow](https://coursework.cs.duke.edu/201-public-documentation/resources-201/-/blob/main/projectWorkflow.md) for downloading the starter code for the project, updating your code on coursework using Git, and ultimately submitting to Gradescope for autograding.** We recommend that you read and follow the directions carefully while working on a project! While coding, we recommend that you periodically (perhaps when completing a method or small section) push your changes as explained in Section 5.
+</details>
 
-The main takeaways here in running before implementing `HuffProcess.decompress` are to 
-- Understand what to run when decompressing.
-- Understand how to use _diff_ on the command line or the _Diff.java_ program to compare files. The command line _diff_ is easier to run, see the section below for details.
+For this project (P7 Huffman), **you are allowed to work with a partner** (that is, in a group of two). If you are working with a partner, read the details in the expandable section below on how to collaborate using Git. 
 
-Implement `HuffProcessor.decompress` as described in the section below. Only when you can decompress mystery/hidden files and verify their contents are you ready to proceed to the `HuffProcessor.compress` method which is described in its own section below.
+<details>
+<summary>Details on Git with a Partner for P7</summary>
 
+You may find it helpful to begin by reading the Working Together section of the [Git tutorial](https://gitlab.oit.duke.edu/academic-technology/cct/-/tree/master/git) from the Duke Colab.
 
+One person should fork the starter code and then add their partner as a collaborator on the project. Choose Settings>Members>Invite Members. Then use the autocomplete feature to invite your partner to the project as a *maintainer*. Both of you can now clone and push to this project. See the [gitlab documentation here](https://docs.gitlab.com/ee/user/project/members/).
 
-## Git Repositories
+Now you should be ready to clone the code to your local machines.
 
-Fork, clone, and import the cloned project from the file system. Use this URL from the course GitLab site: https://coursework.cs.duke.edu/201fall21/P7-Huffman. ***Be sure to fork first*** (see screen shot). Then, clone using the SSH URL after using a terminal window to cd into your IntelliJ workspace. 
-
-
-<div align="center">
-  <img width="421" height="61" src="p7-figures/gitClone.png">
-</div>
-
-
-### Pushing to Git
-
-When you make a series of changes you want to 'save', you'll push those changes to your GitLab repository. You should do this after major changes, certainly every hour or so of coding. You'll need to use the standard Git sequence to commit and push to GitLab:
-
+1. Both students should clone the same repository and import it into VS Code just like previous projects.  
+2. After both students have cloned and imported, one person can edit the code then commit and push this change as usual. 
+3. The other partner will then issue a git pull request. Simply use the command-line (in the same project directory where you cloned the starter code for the project) and type:
 ```bash
-git add .
-git commit -m 'a short description of your commit here'
-git push
+git pull
 ```
+4. If the other partner now opens the project in VS Code again, they should see the code including the edits from the first partner. 
+5. You can continue this workflow: Whenever one person finishes work on the project, they commit and push. Whenever anyone starts work on the project, they begin by downloading the current version from the shared online repository using a git pull command.
 
-### Git With Partners
+This process works as long as only one person is editing at a time, and **you always pulls before editing** and **commit/push when finished**. If you forget to pull before editing your local code, you might end up working from an old version of the code different than what is in the shared online gitlab repository. If that happens, you may experience an error when you attempt to push your code back to the shared online repository. 
 
-You may work with a partner, ***preferably from your discussion section, but can be anyone on this assignment***. One person should fork-and-clone from the GitLab repo. That person will add the other person/partner as a collaborator on the project. For full information, see the documentation here:  https://docs.gitlab.com/ee/user/project/members/. [^1]
-Choose Settings->Members->Invite Members. Then use the autocomplete feature to invite your partner to the project. Both of you can clone and push to this project.
+There are many ways to resolve these conflicts. See the [working together Git tutorial](https://gitlab.oit.duke.edu/academic-technology/cct/-/blob/master/git/working_together.md) [branching and merging Git tutorial](https://gitlab.oit.duke.edu/academic-technology/cct/-/blob/master/git/branching_merging.md) from the Duke Colab for more information. You can also refer to our [Git troubleshooting document](https://coursework.cs.duke.edu/201-public-documentation/resources-201/-/blob/main/troubleshooting.md#git-faq). 
 
-As long as partners are modifying different files, this process works seamlessly. Modifying the same file can lead to issues in resolving conflicts. Git will deal with this with your help, but it's better to take turns in working on the same file, or to work on different files within the project (not very possible in Huffman Coding as done in 201). ***Ideally you'll always be together in-person, via Zoom, or otherwise when working on the project***.
-When submitting you'll use the partner/team in Gradescope. Refer to the directions from [P4](https://coursework.cs.duke.edu/201-public-documentation/p4-dna-linkstrand) if you need a refresher on using Git/Gradescope with a partner.
+Additional resources: if you have any concerns about using Git with a partner, please consult the [Git troubleshooting guide](https://coursework.cs.duke.edu/cs201projects/resources-201/-/blob/main/gitTroubleshooting.md).
 
-There is only one file you will modify in this project: `HuffProcessor.java`. ***Try to work together, side-by-side or via Zoom, if you have a partner.***
+</details>
 
-## Before You Start: The `BitInputStream` and `BitOutputStream` Classes
+
+
+## Part 0: Understanding and Running Starter Code
+
+Once you understand the Huffman coding algorithm, you should review this section to understand the organization of the starter code.
+
+### `BitInputStream` and `BitOutputStream` Classes
 
 These two classes are provided to help in reading/writing bits in (un)compressed files. They extend the Java [InputStream](https://docs.oracle.com/javase/9/docs/api/java/io/InputStream.html) and [OutputStream](https://docs.oracle.com/javase/9/docs/api/java/io/OutputStream.html) classes, respectively. They function just like Scanner, except instead of reading in / writing out arbitrarily delimited “tokens”, they read/write a specified number of bits. Note that two consecutive calls to the `readBits` method will likely return different results since InputStream classes maintain an internal "cursor" or "pointer" to a spot in the stream from which to read -- and once read the bits won't be read again (unless the stream is reset).
 
@@ -115,16 +94,36 @@ The only methods you will need to interact with are the following:
 2. `void BitInputStream.reset()`: This method repositions the “cursor” to the beginning of the input file.
 3. `void BitOutputStream.writeBits(int numBits, int value)`: This method writes the least-significant `numBits` bits of the value to the output file.
 
-[^1]: [Here is a video](https://duke.zoom.us/rec/play/7sJ_f-n7_D83G9KUtwSDA6B7W9ToJ66s2yMd_PBfzRzkVHlVYVbwN7IR0JVARrVzkz27qCD6UJSD3w?continueMode=true) from a previous semester showing how partners can get started with Git (cloning, pushing and pulling, resolving merge conflicts).
+### Running Starter Code (with incomplete `HuffProcessor.decompress`)
+
+**Run `HuffMainDecompress`**. This prompts for a file to decompress, then calls `HuffProcessor.decompress`. You're given a stub version of that method; it initially ***simply copies the first file to another file***, it doesn’t actually decompress it. To make sure you know how to use this program, we recommend you run the program as described.
+
+Choose `mystery.tif.hf` from the data folder to decompress (the `.hf` suffix indicates this has been compressed by a working `HuffProcessor.compress`). When prompted with a name for the file to save, use a `UHF prefix`, i.e., save with the name `UFHmystery.tif.uhf (that suffix is the default).  
+
+Then run `diff` on the command line/terminal (details in the expandable section below). Use diff to compare two files: the original, `mystery.tif.hf` and the uncompressed version: `UHFmystery.tif.uhf`. The `diff` program should say these files are the same. This is because the code you first get from git simply copies the first file to another file, it doesn't actually decompress it. 
+
+The main takeaways here in running before implementing `HuffProcess.decompress` are to 
+- Understand what to run when decompressing.
+- Understand how to use `diff` on the command line to compare files. 
+
+<details>
+<summary>Expand for details on running `diff` at the terminal</summary>
+
+There is a mac/unix command `diff` you can run in a terminal/bash shell on Mac/Windows (you can also just use the integrated terminal in VS Code). This command-line `diff`  compares two files and indicates if they are the same bit-for-bit or not. 
+
+You type (terminal/shell):    `diff foo.txt bar.txt`
+
+If the files are the same _nothing is printed_. If the files are different there's an indication of where they are different for text files, and just `different` if the files are binary/compressed/image files. For P7, you'll likely use debugging print statements if files aren't the same.
 
 </details>
 
-## Implementing `HuffProcessor.decompress`
-<details>
-<summary>Writing Decompression Code First</summary>
+## Part 1: Implementing `HuffProcessor.decompress`
+
+You should begin programming by implementing `decompress` first before moving on to `compress`.
+
+### Writing Decompression Code First
 
 You'll remove the code you're given intially in `HuffProcessor.decompress` and implement code to actually compress as described in this section. You **must remember to close the output file** before `decompress` returns. The call `out.close` is in the code you're given, be sure it's in the code you write as well.
-
 
 
 There are four conceptual steps in decompressing a file that has been compressed using Huffman coding:
@@ -202,24 +201,9 @@ The pseudocode from https://www.cs.duke.edu/csed/poop/huff/info/  is reproduced 
   close output file
 ```
 
+## Part 2: Implementing `HuffProcessor.compress`
 
-### Command-line diff and Diff.java
-
-There is a mac/unix command `diff` you can run in a terminal/bash shell on Mac/Windows. This command-line `diff`  compares two files and indicates if they are the same bit-for-bit or not. 
-
-You type (terminal/shell):    `diff foo.txt bar.txt`
-
-If the files are the same _nothing is printed_. If the files are different there's an indication of where they are different for text files, 
-and just `different` if the files are binary/compressed/image files. For huff, you'll likely use debugging print statements if files aren't the same. 
-You can also run Diff.java, provided to you for this assignment. It will ask you to select two files (from the same folder). The program prompts you to select files and displays a message if the files are the same or different.
-You use command-click or control-click to choose a second file on Mac/Windows. 
-
-
-</details>
-
-## Implementing `HuffProcessor.compress`
-<details>
-<summary>Writing Compress after finishing Decompress</summary>
+Writing Compress after finishing Decompress
 
 There are five conceptual steps to compress a file using Huffman coding. You do not need to use helper methods for these steps, but for some steps helper methods are extremely useful and will facilitate debugging.
 1. Determine the frequency of every eight-bit character/chunk in the file being compressed (see line 78 below).
@@ -304,7 +288,6 @@ You'll use code like this for every 8-bit chunk read from the file being compres
 ```
 You'll write these bits _after_ writing the bits for every 8-bit chunk. The encoding for `PSEUDO_EOF` is used when decompressing, ***so you'll need to write the encoding bits before the output file is closed.***
 
-</details>
 
 ## Analysis
 <details> 
