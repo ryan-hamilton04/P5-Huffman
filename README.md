@@ -6,7 +6,6 @@
 - [Part 2: Implementing `HuffProcessor.compress`](#part-2-implementing-huffprocessorcompress)
 - [Submitting, Reflect, Grading](#submitting-reflect-grading)
 - [Appendix: How the Tree in `decompress` was generated](#appendix-how-the-tree-in-decompress-was-generated)
-- [Appendix: Print Debugging Levels](#appendix-print-debugging-levels)
 
 ## Project Introduction
 
@@ -279,7 +278,7 @@ For this, you'll essentially implement a recursive helper method, similar to cod
     makeEncodings(root,"",encodings);
 ```
 
-In this method, if the `HuffNode` parameter is a leaf, an encoding for the value stored in the leaf is added to the array, e.g.,
+In this method, if the `HuffNode` parameter is a leaf (recall that a leaf node has no left or right child), an encoding for the value stored in the leaf is added to the array, e.g.,
 ``` java
    if (root is leaf) {
         encodings[root.value] = path;
@@ -317,16 +316,14 @@ No analysis is required for P7 Huffman. However, you should be able to answer qu
 
 You'll submit the code to Gradescope after pushing your program to GitLab. If you worked with a partner, you and your partner will submit **together for the code** but **separately for the reflect.** Refer to [this document](https://docs.google.com/document/d/e/2PACX-1vREK5ajnfEAk3FKjkoKR1wFtVAAEN3hGYwNipZbcbBCnWodkY2UI1lp856fz0ZFbxQ3yLPkotZ0U1U1/pub) for submitting to Gradescope with a partner.
 
-**You can access the reflect from here: TODO**
-
-### Grading 
+**You can access the [reflect from here](https://forms.office.com/Pages/ResponsePage.aspx?id=TsVyyzFKnk2xSh6jbfrJTErNjWEU70pGg_ytfEVEPi5UQkxVTkhGWUxJS0VNMERVMTA4TzdRTFdMVy4u).**
 
 Points are awarded equally for compression and decompression. You'll get points for decompressing and compressing text and image files. These are 10 points each, for a total of 40 points possible. There is no graded analysis portion for this project. Completing the reflect is two points.
 
-
 ## Appendix: How the Tree in `decompress` was generated
+
 <details>
-<summary>Development and Debugging</summary>
+<summary> Expand for appendix details </summary>
 
 A 9-bit sequence represents a "character"/chunk stored in each leaf. This character/chunk, actually a value between 0-255, will be written to the output stream when uncompressing. One leaf stores PSEUDO_EOF, this won't be printed during uncompression, but will stop the process of reading bits.
 
@@ -336,70 +333,4 @@ A 9-bit sequence represents a "character"/chunk stored in each leaf. This charac
 
 When you read the first 0, you know it's an internal node (it's a 0), you'll create an internall `HuffNode` node, and recursively read the left and right subtrees. The left subtree call will read the bits 001X1Y01Z1W as the left subtree of the root and the right subtree recursive call will read  01A1B as the right subtree. Note that in the bit-sequence representing the tree, a single bit of 0 and 1 differentiates INTERNAL nodes from LEAF nodes, not the left/right branch taken in uncompressing -- that comes later. The internal node that's the root of the left subtree of the overall root has its own left subtree of 01X1Y and a right subtree of 01Z1W. When you read the single 1-bit, your code will need to read 9-bits to obtain the value stored in the leaf.
 
-## Appendix: Print Debugging Levels
-
-The class `HuffProcessor` can be constructed debugging as on, or true. The default is that debugging is off or false.
-``` java
- HuffProcessor hp  = new HuffProcessor();       // default, debugging off
- HuffProcessor hp = new HuffProcessor(true);    // here set to true
-```
-You can then write printing/debugging code in your helper methods that you can "turn off" by simply constructing the `HuffProcessor` with on off/false value for debugging. In my code I have statements like the following:
-Which prints information about the frequencies of each 8-bit chunk.
-
-<div align="center">
-  <img  src="p7-figures/newdebug.png">
-</div>
-
-For the file `small.txt` which consists of the single line ***Compsci 201: Duke***, the full debugging output is shown below for my program that compresses the data. You don't need to replicate this, but you may find that having some debugging output is useful. This file is small, so there's not much debugging output. There would be much more for a larger or image file.
-
-```
-Huffman Compress Main
-10        1
-32        2
-48        1
-49        1
-50        1
-58        1
-67        1
-68        1
-99        1
-101        1
-105        1
-107        1
-109        1
-111        1
-112        1
-115        1
-117        1
-pq created with 18 nodes
-encoding for 10 is 0010
-encoding for 32 is 010
-encoding for 48 is 11010
-encoding for 49 is 0001
-encoding for 50 is 1011
-encoding for 58 is 11011
-encoding for 67 is 1100
-encoding for 68 is 11110
-encoding for 99 is 11101
-encoding for 101 is 0111
-encoding for 105 is 1001
-encoding for 107 is 1000
-encoding for 109 is 0110
-encoding for 111 is 1010
-encoding for 112 is 11100
-encoding for 115 is 11111
-encoding for 117 is 0000
-encoding for 256 is 0011
-compress from small.txt to small.hf
-file: 144 bits to 312 bits
-read 144 bits, wrote 309 bits
-bits saved = -165
-```
-
-
 </details>
-
-[Huffman Article]: https://www.huffmancoding.com/my-uncle/scientific-american
-[Huffman Wikipedia]: https://en.wikipedia.org/wiki/Huffman_coding
-[Duke Huffman]: https://www2.cs.duke.edu/csed/poop/huff/info/
-[Nifty Assignments]: http://nifty.stanford.edu
