@@ -97,7 +97,7 @@ The only methods you will need to interact with are the following:
 
 Choose `mystery.tif.hf` from the data folder to decompress (the `.hf` suffix indicates this has been compressed by a working `HuffProcessor.compress`). When prompted with a name for the file to save, use a `UHF prefix`, i.e., save with the name `UFHmystery.tif.uhf (that suffix is the default).  
 
-Then run `diff` on the command line/terminal (details in the expandable section below). Use diff to compare two files: the original, `mystery.tif.hf` and the uncompressed version: `UHFmystery.tif.uhf`. The `diff` program should say these files are the same. This is because the code you first get from git simply copies the first file to another file, it doesn't actually decompress it. 
+Then run `diff` on the command line/terminal (details in the expandable section below). Use diff to compare two files: the original, `mystery.tif.hf` and the uncompressed version: `UHFmystery.tif.uhf`. The `diff` program should say these files are the same. This is because the code you first get from git simply copies the first file to another file, it doesn't actually decompress it. **You will use `diff` to check whether your implementation is working correctly locally, there are no JUnit tests for this project.**
 
 The main takeaways here in running before implementing `HuffProcess.decompress` are to 
 - Understand what to run when decompressing.
@@ -106,11 +106,15 @@ The main takeaways here in running before implementing `HuffProcess.decompress` 
 <details>
 <summary>Expand for details on running diff at the terminal</summary>
 
-There is a mac/unix command `diff` you can run in a terminal/bash shell on Mac/Windows. This command-line `diff`  compares two files and indicates if they are the same bit-for-bit or not. 
+There is a mac/unix command `diff` you can run in a terminal/bash shell on Mac/Windows (including the built-in terminal in VS Code). This command-line `diff`  compares two files and indicates if they are the same bit-for-bit or not. First you must navigate to the directory/folder containing the files you would like to compare. You can use the following commands to navigate directories in your terminal:
 
-You type (terminal/shell):    `diff foo.txt bar.txt`
+- `pwd` stands for "print working directory." Entering it will print the path to your current directory (the folder you are in).
+- `ls` stands for "list subdirectories." Entering it will print all files and subfolders in your current folder. 
+- `cd` stands for "change direcotory. Entering it, followed by a subfolder name, will navigate to that subfolder. For example, `cd Documents`. Entering `cd` with nothing after will navigate to your home directory. Entering `cd ..` will navigate to the enclosing directory (that is, will "back up one level" in the folder hierarchy).
 
-If the files are the same _nothing is printed_. If the files are different there's an indication of where they are different for text files, and just `different` if the files are binary/compressed/image files. For P7, you'll likely use debugging print statements if files aren't the same.
+Once you are in the same folder as the files you would like to compare, you can type (terminal/shell): `diff foo.txt bar.txt` to compare `foo.txt` and `bar.txt`.
+
+If the files are the same _nothing is printed_. If the files are different there's an indication of where they are different for text files, and just `different` if the files are binary/compressed/image files. For your purposes in P7 it isn't especially crucial that you understand the output printed by `diff` - generally you will just want to check if a decompressed file is exactly same as the original file before any compression/decompression.
 
 </details>
 
