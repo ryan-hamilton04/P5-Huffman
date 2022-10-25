@@ -1,9 +1,14 @@
 # Project 5: Huffman Coding/Compression
 
+This is the directions document for Project 5 Huffman in CompSci 201 at Duke University, Fall 2022. [This document details the workflow](hhttps://coursework.cs.duke.edu/cs-201-fall-22/resources-201/-/blob/main/projectWorkflow.md) for downloading the starter code for the project, updating your code on coursework using Git, and ultimately submitting to Gradescope for autograding.
+
+## Outline 
+
 - [Project Introduction](#project-introduction)
 - [Part 0: Understanding and Running Starter Code](#part-0-understanding-and-running-starter-code)
 - [Part 1: Implementing `HuffProcessor.decompress`](#part-1-implementing-huffprocessordecompress)
 - [Part 2: Implementing `HuffProcessor.compress`](#part-2-implementing-huffprocessorcompress)
+- [Analysis](#analysis)
 - [Submitting, Reflect, Grading](#submitting-reflect-grading)
 - [Appendix: How the Tree in `decompress` was generated](#appendix-how-the-tree-in-decompress-was-generated)
 
@@ -37,44 +42,6 @@ We first gave a Huffman coding assignment at Duke in Spring of 1994. Over the ye
 </details>
 
 When you've read the description of the algorithm and data structures used you'll be ready to implement both decompression (a.k.a. uncompressing) and compression  using Huffman Coding. You'll be using input and output or I/O classes that read and write 1 to many bits at a time, i.e., a single zero or one to several zeros and ones. This will make debugging your program a challenge.
-
-### Git and Partners, and Submitting for P5
-
-<details>
-<summary>Details on Standard Project Workflow</summary>
-You must have installed all software (Java, Git, VS Code) before you can complete the project.You can find the [directions for installation here](https://coursework.cs.duke.edu/201-public-documentation/resources-201/-/blob/main/installingSoftware.md). We'll be using Git and the installation of GitLab at [coursework.cs.duke.edu](https://coursework.cs.duke.edu). All code for classwork will be kept here. Git is software used for version control, and GitLab is an online repository to store code in the cloud using Git.
-
-**[This document details the workflow](https://coursework.cs.duke.edu/201-public-documentation/resources-201/-/blob/main/projectWorkflow.md) for downloading the starter code for the project, updating your code on coursework using Git, and ultimately submitting to Gradescope for autograding.** We recommend that you read and follow the directions carefully while working on a project! While coding, we recommend that you periodically (perhaps when completing a method or small section) push your changes as explained in Section 5.
-</details>
-
-For this project (P5 Huffman), **you are allowed to work with a partner** (that is, in a group of two). If you are working with a partner, read the details in the expandable section below on how to collaborate using Git. 
-
-<details>
-<summary>Details on Git with a Partner for P5</summary>
-
-You may find it helpful to begin by reading the Working Together section of the [Git tutorial](https://gitlab.oit.duke.edu/academic-technology/cct/-/tree/master/git) from the Duke Colab.
-
-One person should fork the starter code and then add their partner as a collaborator on the project. Choose Settings>Members>Invite Members. Then use the autocomplete feature to invite your partner to the project as a *maintainer*. Both of you can now clone and push to this project. See the [gitlab documentation here](https://docs.gitlab.com/ee/user/project/members/).
-
-Now you should be ready to clone the code to your local machines.
-
-1. Both students should clone the same repository and import it into VS Code just like previous projects.  
-2. After both students have cloned and imported, one person can edit the code then commit and push this change as usual. 
-3. The other partner will then issue a git pull request. Simply use the command-line (in the same project directory where you cloned the starter code for the project) and type:
-```bash
-git pull
-```
-4. If the other partner now opens the project in VS Code again, they should see the code including the edits from the first partner. 
-5. You can continue this workflow: Whenever one person finishes work on the project, they commit and push. Whenever anyone starts work on the project, they begin by downloading the current version from the shared online repository using a git pull command.
-
-This process works as long as only one person is editing at a time, and **you always pulls before editing** and **commit/push when finished**. If you forget to pull before editing your local code, you might end up working from an old version of the code different than what is in the shared online gitlab repository. If that happens, you may experience an error when you attempt to push your code back to the shared online repository. 
-
-There are many ways to resolve these conflicts. See the [working together Git tutorial](https://gitlab.oit.duke.edu/academic-technology/cct/-/blob/master/git/working_together.md) [branching and merging Git tutorial](https://gitlab.oit.duke.edu/academic-technology/cct/-/blob/master/git/branching_merging.md) from the Duke Colab for more information. You can also refer to our [Git troubleshooting document](https://coursework.cs.duke.edu/201-public-documentation/resources-201/-/blob/main/troubleshooting.md#git-faq). 
-
-Additional resources: if you have any concerns about using Git with a partner, please consult the [Git troubleshooting guide](https://coursework.cs.duke.edu/cs201projects/resources-201/-/blob/main/gitTroubleshooting.md).
-
-</details>
-
 
 
 ## Part 0: Understanding and Running Starter Code
@@ -305,18 +272,17 @@ You'll use code like this for every 8-bit chunk read from the file being compres
 ```
 You'll write these bits _after_ writing the bits for every 8-bit chunk. The encoding for `PSEUDO_EOF` is used when decompressing, ***so you'll need to write the encoding bits before the output file is closed.***
 
+## Analysis
+
+**Question 1.** Is it possible that a compressed file could use more bits than the file being compressed? Why or why not?
+
 ## Submitting, Reflect, Grading
 
-No analysis is required for P5 Huffman. However, you should be able to answer questions like those shown below, and questions related to the project could appear on the final exam.
+Push your code to Git. Do this often. To submit:
 
-1. Why did you implement decompress first?
-2. What is the purpose of PSEUDO_EOF?
-3. How can a compressed file have more bits than the file being compressed? When does this happen?
-4. What compresses more: an image file or a text file, why do you think this happens?
-
-You'll submit the code to Gradescope after pushing your program to GitLab. If you worked with a partner, you and your partner will submit **together for the code** but **separately for the reflect.** Refer to [this document](https://docs.google.com/document/d/e/2PACX-1vREK5ajnfEAk3FKjkoKR1wFtVAAEN3hGYwNipZbcbBCnWodkY2UI1lp856fz0ZFbxQ3yLPkotZ0U1U1/pub) for submitting to Gradescope with a partner.
-
-**You can access the [reflect from here](https://forms.office.com/Pages/ResponsePage.aspx?id=TsVyyzFKnk2xSh6jbfrJTErNjWEU70pGg_ytfEVEPi5UQkxVTkhGWUxJS0VNMERVMTA4TzdRTFdMVy4u).**
+1. Submit your code on gradescope to the autograder.
+2. Submit a PDF to Gradescope in the separate Analysis assignment. Be sure to mark pages for the questions as explained in the [gradescope documentation here](https://help.gradescope.com/article/ccbpppziu9-student-submit-work#submitting_a_pdf).
+3. Complete the brief reflect form (TO BE ADDED).
 
 Points are awarded equally for compression and decompression. You'll get points for decompressing and compressing text and image files. These are 10 points each, for a total of 40 points possible. There is no graded analysis portion for this project. Completing the reflect is two points.
 
