@@ -1,4 +1,4 @@
-# P7: Huffman Coding/Compression
+# Project 5: Huffman Coding/Compression
 
 - [Project Introduction](#project-introduction)
 - [Part 0: Understanding and Running Starter Code](#part-0-understanding-and-running-starter-code)
@@ -38,7 +38,7 @@ We first gave a Huffman coding assignment at Duke in Spring of 1994. Over the ye
 
 When you've read the description of the algorithm and data structures used you'll be ready to implement both decompression (a.k.a. uncompressing) and compression  using Huffman Coding. You'll be using input and output or I/O classes that read and write 1 to many bits at a time, i.e., a single zero or one to several zeros and ones. This will make debugging your program a challenge.
 
-### Git and Partners, and Submitting for P7
+### Git and Partners, and Submitting for P5
 
 <details>
 <summary>Details on Standard Project Workflow</summary>
@@ -47,10 +47,10 @@ You must have installed all software (Java, Git, VS Code) before you can complet
 **[This document details the workflow](https://coursework.cs.duke.edu/201-public-documentation/resources-201/-/blob/main/projectWorkflow.md) for downloading the starter code for the project, updating your code on coursework using Git, and ultimately submitting to Gradescope for autograding.** We recommend that you read and follow the directions carefully while working on a project! While coding, we recommend that you periodically (perhaps when completing a method or small section) push your changes as explained in Section 5.
 </details>
 
-For this project (P7 Huffman), **you are allowed to work with a partner** (that is, in a group of two). If you are working with a partner, read the details in the expandable section below on how to collaborate using Git. 
+For this project (P5 Huffman), **you are allowed to work with a partner** (that is, in a group of two). If you are working with a partner, read the details in the expandable section below on how to collaborate using Git. 
 
 <details>
-<summary>Details on Git with a Partner for P7</summary>
+<summary>Details on Git with a Partner for P5</summary>
 
 You may find it helpful to begin by reading the Working Together section of the [Git tutorial](https://gitlab.oit.duke.edu/academic-technology/cct/-/tree/master/git) from the Duke Colab.
 
@@ -113,7 +113,7 @@ There is a mac/unix command `diff` you can run in a terminal/bash shell on Mac/W
 
 Once you are in the same folder as the files you would like to compare, you can type (terminal/shell): `diff foo.txt bar.txt` to compare `foo.txt` and `bar.txt`.
 
-If the files are the same _nothing is printed_. If the files are different there's an indication of where they are different for text files, and just `different` if the files are binary/compressed/image files. For your purposes in P7 it isn't especially crucial that you understand the output printed by `diff` - generally you will just want to check if a decompressed file is exactly same as the original file before any compression/decompression.
+If the files are the same _nothing is printed_. If the files are different there's an indication of where they are different for text files, and just `different` if the files are binary/compressed/image files. For your purposes in P5 it isn't especially crucial that you understand the output printed by `diff` - generally you will just want to check if a decompressed file is exactly same as the original file before any compression/decompression.
 
 </details>
 
@@ -133,7 +133,7 @@ We recommend using the following code as a base for your decompress method becau
 <summary> Expand for example decompress outline </summary>
 
 <div align="center">
-  <img width="837" height="254" src="p7-figures/decompress.png">
+  <img width="837" height="254" src="p5-figures/decompress.png">
 </div>
 
 To understand this in more detail, please read the explanation in https://www2.cs.duke.edu/csed/poop/huff/info/ -- in particular you'll need to know how the tree was written to write code that reads the tree.
@@ -177,7 +177,7 @@ For example, the tree below corresponds to the bit sequence `0001X1Y01Z1W01A1B`,
 <summary> Expand for example tree </summary>
 
 <div align="center">
-  <img width="291" height="213" src="p7-figures/huffheadtreeNODES.png">
+  <img width="291" height="213" src="p5-figures/huffheadtreeNODES.png">
 </div>
 
 </details>
@@ -232,7 +232,7 @@ There are five conceptual steps to compress a file using Huffman coding. You do 
 You won't need to throw exceptions for the steps outlined. A brief description of each step follows. More details can be found in the explanation of the Huffman algorithm [here][Duke Huffman]
 
 <div align="center">
-  <img width="600" height="180" src="p7-figures/newcompress.png">
+  <img width="600" height="180" src="5-figures/newcompress.png">
 </div>
 
 ### Determining Frequencies (private int[] getCounts)
@@ -307,7 +307,7 @@ You'll write these bits _after_ writing the bits for every 8-bit chunk. The enco
 
 ## Submitting, Reflect, Grading
 
-No analysis is required for P7 Huffman. However, you should be able to answer questions like those shown below, and questions related to the project could appear on the final exam.
+No analysis is required for P5 Huffman. However, you should be able to answer questions like those shown below, and questions related to the project could appear on the final exam.
 
 1. Why did you implement decompress first?
 2. What is the purpose of PSEUDO_EOF?
@@ -328,7 +328,7 @@ Points are awarded equally for compression and decompression. You'll get points 
 A 9-bit sequence represents a "character"/chunk stored in each leaf. This character/chunk, actually a value between 0-255, will be written to the output stream when uncompressing. One leaf stores PSEUDO_EOF, this won't be printed during uncompression, but will stop the process of reading bits.
 
 <div align="center">
-  <img width="291" height="213" src="p7-figures/huffheadtreeNODES.png">
+  <img width="291" height="213" src="p5-figures/huffheadtreeNODES.png">
 </div>
 
 When you read the first 0, you know it's an internal node (it's a 0), you'll create an internall `HuffNode` node, and recursively read the left and right subtrees. The left subtree call will read the bits 001X1Y01Z1W as the left subtree of the root and the right subtree recursive call will read  01A1B as the right subtree. Note that in the bit-sequence representing the tree, a single bit of 0 and 1 differentiates INTERNAL nodes from LEAF nodes, not the left/right branch taken in uncompressing -- that comes later. The internal node that's the root of the left subtree of the overall root has its own left subtree of 01X1Y and a right subtree of 01Z1W. When you read the single 1-bit, your code will need to read 9-bits to obtain the value stored in the leaf.
