@@ -136,7 +136,7 @@ We recommend using the following code as a base for your decompress method becau
   <img width="837" height="254" src="p5-figures/decompress.png">
 </div>
 
-To understand this in more detail, please read the explanation in https://www2.cs.duke.edu/csed/poop/huff/info/ -- in particular you'll need to know how the tree was written to write code that reads the tree.
+To understand this in more detail, please review the explanation in the [Huffman coding writeup](https://www2.cs.duke.edu/csed/poop/huff/info/) -- in particular you'll need to know how the tree was written to write code that reads the tree.
 
 </details>
 
@@ -187,7 +187,7 @@ For example, the tree below corresponds to the bit sequence `0001X1Y01Z1W01A1B`,
 
 Once you've read the bit sequence representing the tree, you'll read the remaining bits from the `BitInputStream` representing the compressed file one bit at a time, traversing the tree from the root and going left or right depending on whether you read a zero or a one. This is represented in the pseudocode for `decompress` by the hidden while loop.
 
-The pseudocode from https://www.cs.duke.edu/csed/poop/huff/info/  is reproduced in the expandable section below, this is the same code shown in that document -- it's not perfect Java, hence pseudocode. (Note: you break when reaching `PSEUDO_EOF`, and then no bits are written to the output file. Otherwise, when writing a value stored in a leaf to the output stream, you write 8, or `BITS_PER_WORD` bits).
+The pseudocode from the [Huffman coding writeup](https://www.cs.duke.edu/csed/poop/huff/info/)  is reproduced in the expandable section below, this is the same code shown in that document -- it's not perfect Java, hence pseudocode. (Note: you break when reaching `PSEUDO_EOF`, and then no bits are written to the output file. Otherwise, when writing a value stored in a leaf to the output stream, you write 8, or `BITS_PER_WORD` bits).
 
 <details>
 <summary> Expand for pseudocode example </summary>
@@ -229,10 +229,10 @@ There are five conceptual steps to compress a file using Huffman coding. You do 
 4. Write the magic number and the tree to the beginning/header of the compressed file (see lines 81-82 below).
 5. Read the file again and write the encoding for each eight-bit chunk, followed by the encoding for PSEUDO_EOF, then close the file being written (not shown).
 
-You won't need to throw exceptions for the steps outlined. A brief description of each step follows. More details can be found in the explanation of the Huffman algorithm [here][Duke Huffman]
+You won't need to throw exceptions for the steps outlined. A brief description of each step follows. More details can be found in the explanation of the Huffman algorithm in the [Huffman coding writeup](https://www.cs.duke.edu/csed/poop/huff/info/).
 
 <div align="center">
-  <img width="600" height="180" src="5-figures/newcompress.png">
+  <img width="600" height="180" src="p5-figures/newcompress.png">
 </div>
 
 ### Determining Frequencies (private int[] getCounts)
