@@ -30,7 +30,9 @@ public class HuffMainCompress {
 		BitInputStream bis = new BitInputStream(inf);
 		BitOutputStream bos = new BitOutputStream(outf);
 		HuffProcessor hp = new HuffProcessor();
+		long before = System.nanoTime();
 		hp.compress(bis, bos);
+		long after = System.nanoTime();
 		System.out.printf("compress from %s to %s\n", 
 		                   inf.getName(),outf.getName());
 		System.out.printf("file: %d bits to %d bits\n",inf.length()*8,outf.length()*8);
@@ -38,5 +40,6 @@ public class HuffMainCompress {
 				           bis.bitsRead(),bos.bitsWritten());
 		long diff = bis.bitsRead() - bos.bitsWritten();
 		System.out.printf("bits saved = %d\n",diff);
+		System.out.printf("Compress took %d milliseconds", (after-before)/1000000);
 	}
 }

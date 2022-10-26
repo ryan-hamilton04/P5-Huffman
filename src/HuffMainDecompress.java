@@ -31,7 +31,9 @@ public class HuffMainDecompress {
 
 		try {
 			HuffProcessor hp = new HuffProcessor();
+			long before = System.nanoTime();
 			hp.decompress(bis, bos);
+			long after = System.nanoTime();
 			System.out.printf("uncompress from %s to %s\n",
 					inf.getName(), outf.getName());
 
@@ -41,6 +43,7 @@ public class HuffMainDecompress {
 			long diff = 8 * (outf.length() - inf.length());
 			long diff2 = bos.bitsWritten() - bis.bitsRead();
 			System.out.printf("%d compared to %d\n", diff, diff2);
+			System.out.printf("Decompress took %d milliseconds", (after-before)/1000000);
 		}
 		catch (HuffException he) {
 			boolean result = outf.delete();
