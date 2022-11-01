@@ -274,19 +274,19 @@ You'll write these bits _after_ writing the bits for every 8-bit chunk. The enco
 
 ## Analysis
 
+You'll submit the analysis as a PDF separate from the code in Gradescope.
+
 For the analysis questions, we will let $`N`$ be the number of total characters in a file to encode, and let $`M`$ be the total number of *unique* characters in the file. Note that both refer to the *non-compressed file*. Note that $`M \leq N`$. Define the *compression ratio* of a file to be the number of bits in the original file divided by the number of bits in the compressed file.
 
 Note that running the `HuffMainCompress` and `HuffMainDecompress` programs will print information to the terminal about the number of bits and the runtime of the compress and decompress algorithms.
 
-**Question 1.** Suppose you want to compress two different files: `fileA` and `fileB`. Both have $`N`$ total characters and $`M`$ unique characters. The characters in `fileA` follow a uniform distribution, meaning each of the $`N`$ characters appears $`N/M`$ times. In `fileB`, the $`i`$'th character appears $`2^i`$ times (and the numbers add up to $`N`$). Which file should achieve a higher compression ratio? Explain your answer. 
+**Question 1.** Suppose you want to compress two different files: `fileA` and `fileB`. Both have $`N`$ total characters and $`M`$ unique characters. The characters in `fileA` follow a uniform distribution, meaning each of the unique characters appears $`N/M`$ times. In `fileB`, the $`i`$'th character appears $`2^i`$ times (and the numbers add up to $`N`$), so some characters are much more common than others. Which file should achieve a higher compression ratio? Explain your answer. 
 
-**Question 2.** What is the asymptotic runtime complexity of `compress` as a function of $`N`$ and/or $`M`$? Explain your answer, referencing the algorithm / implementation.
+**Question 2.** What is the asymptotic runtime complexity of `compress` as a function of $`N`$ and/or $`M`$? Explain your answer, referencing the algorithm / implementation. Be sure to account for all three parts of compression in your explanation: (1) determining counts of characters, (2) creating the Huffman coding tree, and (3) writing the encoded file.
 
-**Question 3.** When running `decompress`, each character that is decompressed requires traversing at most $`M`$ nodes in the Huffman coding tree, and there are $`N`$ such characters. This analysis would at first suggest that the asymptotic runtime complexity of `decompress` is $`O(MN)`$. However, you are unlikely to experience this in practice; this estimate is too simple and pessimistic. To see why, answer the following examing two different extreme cases:
+**Question 3.** When running `decompress`, each character that is decompressed requires traversing at most $`M`$ nodes in the Huffman coding tree, and there are $`N`$ such characters. This analysis would at first suggest that the asymptotic runtime complexity of `decompress` is $`O(MN)`$. However, you are unlikely to experience this in practice; this estimate is too simple and pessimistic. To see why, answer the following examining two different extreme cases:
 - First consider the case where, like `fileA` in question 1, every character appears $`N/M`$ times. Then what would the asymptotic runtime complexity of `decompress` be?
-- Now consider the case like `fileB` where the $`i`$'th character appears $`2^i`$ times (and the numbers add up to $`N`$). Then what would the asymptotic runtime complexity of `decompress` be?
-
-**Question 4.** You do not need to implement this, but explain how you could achieve an $`O(N)`$ `decompress` algorithm. It may help to recall that $`M \leq N`$.
+- Now consider the case like `fileB` where the $`i`$'th character appears $`2^i`$ times (and the numbers add up to $`N`$). Would the runtime complexity be better or worse than for `fileA`? You do not need to derive the asymptotic runtime complexity exactly, just compare to the answer for `fileA`. *Hint*: Recall your answer to question 1 and observe the relationship between the runtime complexity of `decompress` and the *number of bits* in the data being decompressed.
 
 ## Submitting, Reflect, Grading
 
@@ -294,9 +294,9 @@ Push your code to Git. Do this often. To submit:
 
 1. Submit your code on gradescope to the autograder.
 2. Submit a PDF to Gradescope in the separate Analysis assignment. Be sure to mark pages for the questions as explained in the [gradescope documentation here](https://help.gradescope.com/article/ccbpppziu9-student-submit-work#submitting_a_pdf).
-3. Complete the brief reflect form (TO BE ADDED).
+3. Complete the brief [reflect form](https://forms.office.com/Pages/ResponsePage.aspx?id=TsVyyzFKnk2xSh6jbfrJTErNjWEU70pGg_ytfEVEPi5UNElEUDE5UTBYOFBIMlE3Skw3R1lUWEZVQS4u).
 
-Points are awarded equally for compression and decompression. You'll get points for decompressing and compressing text and image files. These are 10 points each, for a total of 40 points possible. There is no graded analysis portion for this project. Completing the reflect is two points.
+Points are awarded equally for compression and decompression. You'll get points for decompressing and compressing text and image files. These are 10 points each, for a total of 40 points possible.
 
 ## Appendix: How the Tree in `decompress` was generated
 
