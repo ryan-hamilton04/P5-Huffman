@@ -1,6 +1,6 @@
 # Project 5: Huffman Coding/Compression
 
-This is the directions document for Project 5 Huffman in CompSci 201 at Duke University, Fall 2022. [This document details the workflow](hhttps://coursework.cs.duke.edu/cs-201-fall-22/resources-201/-/blob/main/projectWorkflow.md) for downloading the starter code for the project, updating your code on coursework using Git, and ultimately submitting to Gradescope for autograding.
+This is the directions document for Project 5 Huffman in CompSci 201 at Duke University, Spring 2023. [This document details the workflow](https://coursework.cs.duke.edu/cs-201-spring-23/resources-201/-/blob/main/projectWorkflow.md) for downloading the starter code for the project, updating your code on coursework using Git, and ultimately submitting to Gradescope for autograding.
 
 ## Outline 
 
@@ -9,7 +9,7 @@ This is the directions document for Project 5 Huffman in CompSci 201 at Duke Uni
 - [Part 1: Implementing `HuffProcessor.decompress`](#part-1-implementing-huffprocessordecompress)
 - [Part 2: Implementing `HuffProcessor.compress`](#part-2-implementing-huffprocessorcompress)
 - [Analysis](#analysis)
-- [Submitting, Reflect, Grading](#submitting-reflect-grading)
+- [Submitting and Grading](#submitting-and-grading)
 - [Appendix: How the Tree in `decompress` was generated](#appendix-how-the-tree-in-decompress-was-generated)
 
 ## Project Introduction
@@ -288,13 +288,12 @@ Note that running the `HuffMainCompress` and `HuffMainDecompress` programs will 
 - First consider the case where, like `fileA` in question 1, every unique character appears $`N/M`$ times. Then what would the asymptotic runtime complexity of `decompress` be?
 - Now consider the case like `fileB` where the $`i`$'th unique character appears $`2^i`$ times (and the numbers add up to $`N`$). Would the runtime complexity be better or worse than for `fileA`? You do not need to derive the asymptotic runtime complexity exactly, just compare to the answer for `fileA`. *Hint*: Recall your answer to question 1 and observe the relationship between the runtime complexity of `decompress` and the *number of bits* in the data being decompressed.
 
-## Submitting, Reflect, Grading
+## Submitting and Grading
 
 Push your code to Git. Do this often. To submit:
 
 1. Submit your code on gradescope to the autograder.
 2. Submit a PDF to Gradescope in the separate Analysis assignment. Be sure to mark pages for the questions as explained in the [gradescope documentation here](https://help.gradescope.com/article/ccbpppziu9-student-submit-work#submitting_a_pdf).
-3. Complete the brief [reflect form](https://forms.office.com/Pages/ResponsePage.aspx?id=TsVyyzFKnk2xSh6jbfrJTErNjWEU70pGg_ytfEVEPi5UNElEUDE5UTBYOFBIMlE3Skw3R1lUWEZVQS4u).
 
 Points are awarded equally for compression and decompression. You'll get points for decompressing and compressing text and image files. These are 10 points each, for a total of 40 points possible on the code. The analysis is worth another 9 points.
 
