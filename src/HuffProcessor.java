@@ -64,14 +64,75 @@ public class HuffProcessor {
 	 */
 	public void compress(BitInputStream in, BitOutputStream out){
 
-
-		// remove all this code when implementing compress
-		while (true){
-			int val = in.readBits(BITS_PER_WORD);
-			if (val == -1) break;
-			out.writeBits(BITS_PER_WORD, val);
+		int[] counts = getCounts(in);
+		HuffNode root = makeTree(counts);
+		String[] encodings = new String[ALPH_SIZE+1];
+		makeEncodings(root,"",encodings);
+		out.writeBits(BITS_PER_INT,HUFF_TREE);
+		writeTree(root,out);
+		in.reset();
+		int nextByte = in.readBits(BITS_PER_WORD);
+		while (nextByte != -1) {
+			String code = encodings[nextByte];
+			out.writeBits(code.length(), Integer.parseInt(code, 2));
 		}
+		String eofCode = encodings[PSEUDO_EOF];
+		out.writeBits(eofCode.length(), Integer.parseInt(eofCode, 2));
 		out.close();
+	}
+	private int[] getCounts(BitInputStream in){
+		int[] counts = new int[ALPH_SIZE];
+		int bits = in.readBits(BITS_PER_WORD);
+		while (bits != -1){
+			counts[bits]++;
+		}
+		return counts;
+	}
+	private HuffNode makeTree(int[] counts){
+		PriorityQueue<HuffNode> pq = new PriorityQueue<>();
+		for(int i = 0; i < ALPH_SIZE; i++) {
+			if(counts[i] > 0){
+				pq.add(new HuffNode(i,counts[i],null,null));
+			}
+		}
+		pq.add(new HuffNode(PSEUDO_EOF,1,null,null)); // account for PSEUDO_EOF having a single occurrence
+		
+		while (pq.size() > 1) {
+		   HuffNode left = pq.remove();
+		   HuffNode right = pq.remove();
+		   HuffNode t  = new HuffNode(0,left.weight+right.weight,left,right);
+		   // create new HuffNode t with weight from
+		   // left.weight+right.weight and left, right subtrees
+		   pq.add(t);
+		}
+		HuffNode root = pq.remove();
+		return root;
+		
+	}
+	private void makeEncodings(HuffNode root, String path, String[] encodings){
+		if (root == null) {
+			return;
+		}
+		if (root.left == null && root.right == null) {
+			encodings[root.value] = path;
+			return;
+		}
+		makeEncodings(root.left, path + "0", encodings);
+		makeEncodings(root.right, path + "1", encodings);
+	}
+	private void writeTree(HuffNode root, BitOutputStream out) {
+		if (root == null) {
+			return;
+		}
+	
+		if (root.left == null && root.right == null) {
+			out.writeBits(1, 1);
+			out.writeBits(BITS_PER_WORD + 1, root.value);
+		} else {
+			out.writeBits(1, 0);
+			writeTree(root.left, out);
+			writeTree(root.right, out);
+		}
 	}
 
 	/**
@@ -113,13 +174,6 @@ public class HuffProcessor {
 			}
 		}  
 
-		// remove all code when implementing decompress
-
-		// while (true){
-		// 	int val = in.readBits(BITS_PER_WORD);
-		// 	if (val == -1) break;
-		// 	out.writeBits(BITS_PER_WORD, val);
-		// }
 		out.close();
 	}
 	private HuffNode readTree(BitInputStream in) {
