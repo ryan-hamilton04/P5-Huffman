@@ -145,7 +145,6 @@ public class HuffProcessor {
 	 *            Buffered bit stream writing to the output file.
 	 */
 	public void decompress(BitInputStream in, BitOutputStream out){
-
 		int val = in.readBits(BITS_PER_INT);
 		if (val == -1){
 			throw new HuffException("invalid magic number "+val);
@@ -154,28 +153,29 @@ public class HuffProcessor {
 		HuffNode current = root; 
 		while (true) {
 			int bits = in.readBits(1);
-			if (bits == -1) {
+			if (bits == -1){
 				throw new HuffException("bad input, no PSEUDO_EOF");
 			}
 			else { 
 				if (bits == 0){
 					current = current.left;
-				}else{
+				} else{
 					current = current.right;
 				}
 				if (current.left == null && current.right == null) {
-					if (current.value == PSEUDO_EOF) 
+					if (current.value == PSEUDO_EOF){ 
 						break;   // out of loop
-					else {
+					} else {
 						out.writeBits(BITS_PER_WORD, current.value);
 						current = root; // start back after leaf
 					}
 				}
 			}
 		}  
-
 		out.close();
 	}
+	
+
 	private HuffNode readTree(BitInputStream in) {
 		int bit = in.readBits(1);
 		if (bit == -1){
@@ -192,4 +192,4 @@ public class HuffProcessor {
 			}
 		}
 		
-}
+	}
