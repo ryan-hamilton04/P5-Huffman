@@ -71,8 +71,12 @@ public class HuffProcessor {
 		out.writeBits(BITS_PER_INT,HUFF_TREE);
 		writeTree(root,out);
 		in.reset();
-		int nextByte = in.readBits(BITS_PER_WORD);
-		while (nextByte != -1) {
+		
+		while (true) {
+			int nextByte = in.readBits(BITS_PER_WORD);
+			if (nextByte == -1){
+				break;
+			}
 			String code = encodings[nextByte];
 			out.writeBits(code.length(), Integer.parseInt(code, 2));
 		}
