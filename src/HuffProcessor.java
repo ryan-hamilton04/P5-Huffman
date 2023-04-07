@@ -82,10 +82,18 @@ public class HuffProcessor {
 	}
 	private int[] getCounts(BitInputStream in){
 		int[] counts = new int[ALPH_SIZE];
-		int bits = in.readBits(BITS_PER_WORD);
-		while (bits != -1){
-			counts[bits]++;
+		//int bits = in.readBits(BITS_PER_WORD);
+		while (true){
+			int val = in.readBits(BITS_PER_WORD);
+			if (val == -1){
+				break;
+			}
+			counts[val]++;
 		}
+
+		// while (bits != -1){
+		// 	counts[bits]++;
+		// }
 		return counts;
 	}
 	private HuffNode makeTree(int[] counts){
