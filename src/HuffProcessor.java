@@ -158,8 +158,8 @@ public class HuffProcessor {
 	 */
 	public void decompress(BitInputStream in, BitOutputStream out){
 		int val = in.readBits(BITS_PER_INT);
-		if (val != HUFF_NUMBER){
-			throw new HuffException("invalid magic number "+val);
+		if (val != HUFF_TREE){
+			throw new HuffException("invalid magic number "+ val);
 		}
 		HuffNode root = readTree(in);
 		HuffNode current = root; 
